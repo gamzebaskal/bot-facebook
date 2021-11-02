@@ -21,3 +21,8 @@ while True:
     if brw.is_required_login():
 
         if brw.login(use_default=True): continue
+
+    elif brw.is_required_login() == False:
+        time.sleep(3)
+        brw.take_screenshot(settings.PARGS.page)
+        break
