@@ -1,4 +1,4 @@
-import settings as s
+import settings
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -6,20 +6,26 @@ from selenium.common.exceptions import (TimeoutException,
                                         WebDriverException,
                                         InvalidSessionIdException,
                                         NoSuchElementException)
+from selenium.webdriver.common.by import By
 
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import SoftwareName, OperatingSystem
 
 from utils import hash_url
 
+
 class Browser():
 
     def __init__(self):
         # tarayıcı ayarları
         self.chrome_options = Options()
+        # chrome bildirim pop-up penceresini devre dışı bırakmak için
+        prefs = {"profile.default_content_setting_values.notifications": 2}
+        self.chrome_options.add_experimental_option("prefs", prefs)
 
-        self.brw = webdriver.Chrome(s.BROWSER_DRIVER_DIR,
+        self.brw = webdriver.Chrome(settings.BROWSER_DRIVER_DIR,
                                     options=self.chrome_options)
+        self.brw.maximize_window()
 
         # sahte kullanıcı ayarları
         self.software_names = [SoftwareName.CHROME.value]
@@ -28,7 +34,7 @@ class Browser():
                                             operating_systems=self.operating_systems,
                                             limit=100)
 
-    def get_url(self, url: str = s.DEFAULT_PAGE_URL):
+    def get_url(self, url: str = settings.DEFAULT_PAGE_URL):
         """
         Sahte kullanıcı verileri ile birlikte istenilen URL'e bağlantı sağlar.
         Eğer URL bilgisi iletilmez ise settings dosyasında tanımlanan URL parametresini kullanır.
@@ -38,19 +44,19 @@ class Browser():
         try:
             self.set_user_agent()
             self.brw.get(url)
-            hash_url(url)
+            hash_url(url, save=True)
 
         except TimeoutException as e:
-            s.LOG.error(e)
-            self.brw.close()
-        except WebDriverException as e:
-            s.LOG.error(e)
+            settings.LOG.error(e)
             self.brw.close()
         except InvalidSessionIdException as e:
-            s.LOG.error(e)
+            settings.LOG.error(e)
+            self.brw.close()
+        except WebDriverException as e:
+            settings.LOG.error(e)
             self.brw.close()
         finally:
-            s.LOG.error("finally error!")
+            settings.LOG.error("finally error!")
 
         return self.brw.current_url
 
@@ -70,6 +76,7 @@ class Browser():
         # self.chrome_options.add_argument('--disable-gpu')
         self.chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         self.chrome_options.add_argument('ignore-certificate-errors')
+        self.chrome_options.add_argument("--disable-popup-blocking")
         return user_agent
 
     def is_required_login(self):
@@ -83,12 +90,41 @@ class Browser():
             if url[3] == "login":
                 return True
             else:
-                return False
+                tag_text = self.brw.find_element(By.LINK_TEXT, "Yeni Hesap Oluştur")
+                tag_text = tag_text.get_attribute("href").split('/')[3]
+                if tag_text == "reg":
+                    tag_text = self.brw.find_element(By.LINK_TEXT, "Giriş Yap")
+                    self.get_url(tag_text.get_attribute("href"))
+                    return True
 
         except AttributeError as e:
-            s.LOG.error(e)
+            print("attribute_error: ", e)
             return False
 
         except NoSuchElementException as e:
-            s.LOG.error(e)
+            print("nosuchelement_error: ", e)
+            settings.LOG.error(e)
             return False
+
+    def login(self, use_default: bool = False):
+        try:
+            self.set_user_agent()
+
+            email = self.brw.find_element(By.ID, 'email')
+            _pass = self.brw.find_element(By.ID, 'pass')
+            btn = self.brw.find_element(By.ID, 'loginbutton')
+
+            username = settings.DEFAULT_USERNAME
+            password = settings.DEFAULT_PASSWORD
+
+            if use_default == False:
+                username = input("Lütfen facebook kullanıcı adınızı giriniz: ")
+                password = input("Lütfen facebook şifrenizi giriniz: ")
+
+            email.send_keys(username)
+            _pass.send_keys(password)
+            btn.click()
+
+
+        except NoSuchElementException as e:
+            settings.LOG.error(e)

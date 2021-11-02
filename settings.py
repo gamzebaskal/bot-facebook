@@ -6,12 +6,16 @@ from pathlib import Path
 #Proje yolu
 BASE_DIR = Path(__file__).resolve().parent
 
+# içerik ayarları
+DEFAULT_CONTENT_DIR = Path.joinpath(BASE_DIR, 'content')
+DEFAULT_MEDIA_DIR = Path.joinpath(DEFAULT_CONTENT_DIR, 'media')
+
 # Tarayıcı parametreleri
 BROWSER_DRIVER_DIR = Path.joinpath(BASE_DIR, "drivers/chromedriver.exe")
 
 # Log parametreleri
 LOG = logging
-LOG.basicConfig(filename='logs.log', filemode='a',
+LOG.basicConfig(filename=f'{DEFAULT_CONTENT_DIR}/logs.log', filemode='a',
                            format="%(asctime)s %(message)s",
                            level=logging.DEBUG)
 
