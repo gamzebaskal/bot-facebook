@@ -1,5 +1,6 @@
 import hashlib
 import settings
+import csv
 
 
 def hash_url(url: str, save: bool = False):
@@ -26,3 +27,10 @@ def hash_url(url: str, save: bool = False):
                       encoding='utf-8') as f:
                 print(md5_url, file=f)
     return md5_url
+
+
+def save_post_meta(data, file):
+    # try:
+    with open(f"{settings.DEFAULT_CONTENT_DIR}/{file}", "a", encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(data)
