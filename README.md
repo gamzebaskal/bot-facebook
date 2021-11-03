@@ -12,3 +12,20 @@ Temel olarak bu proje, istenilen Facebook sayfasından istenilen aya ait tüm g�
 3) Bağlanılan sayfadan, parametre olarak iletilen aya ait postları kaydeder.
 4) Giriş gerektiren sayfalar için kullanıcı bilgileri iletilerek facebook'a giriş yapılabilir.
 5) Facebook'un user-agent bilgilerini kullanarak cihaz tespiti yapmasını önlemek için sahte cihaz bilgileri üretir ve gönderir.
+
+# <b>Nasıl Kurulur?</b><br/>
+Öncelikle projeyi aşağıdaki komut ile bilgisayarınıza indirmelisiniz.
+
+    git clone https://github.com/gamzebaskal/bot-facebook
+
+Bilgisayarınızda python sanal ortamı oluşturun.
+
+    python -m virtualenv venv
+
+Sanal ortamı aktif edin.
+    
+    venv\Scripts\activate.bat
+
+Daha sonra bağımlılıkları yükleyin.
+
+    python -m pip install -r requirements.txt

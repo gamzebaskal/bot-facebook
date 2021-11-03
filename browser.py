@@ -79,6 +79,10 @@ class Browser():
         self.chrome_options.add_argument("--disable-popup-blocking")
         return user_agent
 
+    def take_screenshot(self, url: str = settings.DEFAULT_PAGE_URL):
+        md5_url = hash_url(url)
+        self.brw.save_screenshot(f"{settings.DEFAULT_MEDIA_DIR}/bot-facebook_{md5_url}.png")
+
     def is_required_login(self):
         """
         Görüntülenmek istenen sayfanın giriş gerektirip gerektirmediğini kontrol eder.
