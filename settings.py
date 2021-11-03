@@ -6,12 +6,22 @@ from pathlib import Path
 #Proje yolu
 BASE_DIR = Path(__file__).resolve().parent
 
-# içerik ayarları
+# İçerik ayarları
 DEFAULT_CONTENT_DIR = Path.joinpath(BASE_DIR, 'content')
 DEFAULT_MEDIA_DIR = Path.joinpath(DEFAULT_CONTENT_DIR, 'media')
 
+
 # Tarayıcı parametreleri
 BROWSER_DRIVER_DIR = Path.joinpath(BASE_DIR, "drivers/chromedriver.exe")
+
+DATE = {
+    "01": "Ocak", "02": "Şubat",
+    "03": "Mart", "04": "Nisan",
+    "05": "Mayıs", "06": "Haziran",
+    "07": "Temmuz", "08": "Ağustos",
+    "09": "Eylül", "10": "Ekim",
+    "11": "Kasım", "12": "Aralık",
+}
 
 # Log parametreleri
 LOG = logging
@@ -30,6 +40,6 @@ PARGS = ARGS.parse_args()
 
 # Facebook parametreleri
 DEFAULT_PAGE_URL = "https://www.facebook.com/besiktasbelediyesi"
-DEFAULT_USERNAME = ""
-DEFAULT_PASSWORD = ""
+DEFAULT_USERNAME = "" # facebook kullanıcı adı
+DEFAULT_PASSWORD = "" # facebook şifresi
 

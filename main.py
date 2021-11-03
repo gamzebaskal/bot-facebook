@@ -12,10 +12,10 @@ if settings.PARGS.page:
     """
 
     brw.get_url(settings.PARGS.page)
+    brw.take_screenshot(settings.PARGS.page)
 
 else:
     brw.get_url()
-
 while True:
 
     if brw.is_required_login():
@@ -24,5 +24,7 @@ while True:
 
     elif brw.is_required_login() == False:
         time.sleep(3)
-        brw.take_screenshot(settings.PARGS.page)
+        brw.take_screenshot()
+        brw.get_post_meta()
         break
+
