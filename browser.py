@@ -1,3 +1,8 @@
+import time
+import csv
+
+from selenium.webdriver.common.by import By
+
 import settings
 
 from selenium import webdriver
@@ -6,11 +11,11 @@ from selenium.common.exceptions import (TimeoutException,
                                         WebDriverException,
                                         InvalidSessionIdException,
                                         NoSuchElementException)
-from selenium.webdriver.common.by import By
 
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import SoftwareName, OperatingSystem
 
+import utils
 from utils import hash_url
 
 
@@ -44,21 +49,35 @@ class Browser():
         try:
             self.set_user_agent()
             self.brw.get(url)
-            hash_url(url, save=True)
+            h_url = hash_url(url, save=True)
+            try:
+                with open(f'{settings.DEFAULT_CONTENT_DIR}/DOM/bot-facebook_{h_url}.csv', 'r',
+                          encoding='utf-8') as f:
+                    pass
+
+            except FileNotFoundError as e:
+                with open(f'{settings.DEFAULT_CONTENT_DIR}/DOM/bot-facebook_{h_url}.csv', 'w',
+                          encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(["Begeni", "Yorum", "Paylasim"])
 
         except TimeoutException as e:
-            settings.LOG.error(e)
+            settings.LOG.error(e.msg)
             self.brw.close()
         except InvalidSessionIdException as e:
-            settings.LOG.error(e)
+            settings.LOG.error(e.msg)
             self.brw.close()
         except WebDriverException as e:
-            settings.LOG.error(e)
+            settings.LOG.error(e.msg)
             self.brw.close()
         finally:
             settings.LOG.error("finally error!")
 
         return self.brw.current_url
+
+    def take_screenshot(self, url: str = settings.DEFAULT_PAGE_URL):
+        md5_url = hash_url(url)
+        self.brw.save_screenshot(f"{settings.DEFAULT_MEDIA_DIR}/bot-facebook_{md5_url}.png")
 
     def get_current_url(self):
         """
@@ -79,10 +98,6 @@ class Browser():
         self.chrome_options.add_argument("--disable-popup-blocking")
         return user_agent
 
-    def take_screenshot(self, url: str = settings.DEFAULT_PAGE_URL):
-        md5_url = hash_url(url)
-        self.brw.save_screenshot(f"{settings.DEFAULT_MEDIA_DIR}/bot-facebook_{md5_url}.png")
-
     def is_required_login(self):
         """
         Görüntülenmek istenen sayfanın giriş gerektirip gerektirmediğini kontrol eder.
@@ -102,12 +117,11 @@ class Browser():
                     return True
 
         except AttributeError as e:
-            print("attribute_error: ", e)
+            settings.LOG.error(e)
             return False
 
         except NoSuchElementException as e:
-            print("nosuchelement_error: ", e)
-            settings.LOG.error(e)
+            settings.LOG.error(e.msg)
             return False
 
     def login(self, use_default: bool = False):
@@ -129,6 +143,38 @@ class Browser():
             _pass.send_keys(password)
             btn.click()
 
-
         except NoSuchElementException as e:
             settings.LOG.error(e)
+
+    def slide_scroll(self):
+        # self.brw.execute_script("window.scrollTo(0.5,document.body.scrollHeight)")
+        self.brw.execute_script("window.scrollBy(0,350)")
+
+    def get_post_meta(self, date: str = "2021-10"):
+        counter = 1
+        month = date.split('-')[1]
+        while True:
+            try:
+                find_post = self.brw.find_element(By.XPATH, f"//div[@aria-posinset='{counter}']")
+                elements = find_post.text.split('\n')
+
+                if elements[1].split()[1].rstrip(',') == settings.DATE[month]:
+                    url = hash_url(self.get_current_url())
+                    print('elements', elements)
+                else:
+                    self.slide_scroll()
+                    time.sleep(1)
+                    continue
+
+            except IndexError as e:
+
+                settings.LOG.error(e)
+                self.slide_scroll()
+                counter += 1
+                continue
+
+            except NoSuchElementException as e:
+
+
+                settings.LOG.error(e.msg)
+                continue

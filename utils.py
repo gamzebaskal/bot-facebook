@@ -1,7 +1,5 @@
 import hashlib
-
 import settings
-import settings as s
 
 
 def hash_url(url: str, save: bool = False):
@@ -14,7 +12,8 @@ def hash_url(url: str, save: bool = False):
     md5_url = hashlib.md5(f"{url}".encode()).hexdigest()
     if save:
         try:
-            with open(f"{settings.DEFAULT_CONTENT_DIR}/url-md5.csv", "r+") as f:
+            with open(f"{settings.DEFAULT_CONTENT_DIR}/url-md5.csv", "r+",
+                      encoding='utf-8') as f:
 
                 for i in f:
                     if i.strip() != md5_url:
@@ -23,9 +22,7 @@ def hash_url(url: str, save: bool = False):
                         pass
 
         except FileNotFoundError as e:
-            s.LOG.error(e)
-            with open(f"{settings.DEFAULT_CONTENT_DIR}/url-md5.csv", "w") as f:
+            with open(f"{settings.DEFAULT_CONTENT_DIR}/url-md5.csv", "w",
+                      encoding='utf-8') as f:
                 print(md5_url, file=f)
     return md5_url
-
-
