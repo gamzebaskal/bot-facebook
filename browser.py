@@ -160,11 +160,16 @@ class Browser():
 
                 if elements[1].split()[1].rstrip(',') == settings.DATE[month]:
                     url = hash_url(self.get_current_url())
-                    print('elements', elements)
+                    utils.save_post_meta(data=[elements[11],
+                                               elements[12].split()[0],
+                                               elements[13].split()[0]
+                                               ],
+                                         file=f'DOM/bot-facebook_{url}.csv')
                 else:
                     self.slide_scroll()
                     time.sleep(1)
                     continue
+
 
             except IndexError as e:
 

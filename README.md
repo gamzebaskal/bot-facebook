@@ -29,3 +29,18 @@ Sanal ortamı aktif edin.
 Daha sonra bağımlılıkları yükleyin.
 
     python -m pip install -r requirements.txt
+
+
+# <b>Nasıl Çalıştırılır?</b><br/>
+Uygulama iki farklı şekilde çalıştırılabilir:<br/>
+    <b>Varsayılan Ayarlar İle</b><br/>
+        Settings.py dosyası içerisindeki DEFAULT_PAGE_URL, DEFAULT_USERNAME, DEFAULT_PASSWORD değişkenleri ayarlanmalıdır.<br/>
+        Örneğin;<br/>
+            DEFAULT_PAGE_URL = "https://www.facebook.com/besiktasbelediyesi"
+            DEFAULT_USERNAME = "{facebook_kullanici_adiniz}"
+            DEFAULT_PASSWORD = "{facebook_sifreniz}"<br/>
+    <b>Konsol İle</b><br/>
+        Uygulama çalıştırılırken, konsol üzerinden gerekli parametreler gönderilmelidir. python main.py -p {facebook_sayfa_adresi} -m {post_tarihi} <br/>
+        Örneğin;<br/>
+
+            python main.py -p "https://www.facebook.com/besiktasbelediyesi" -m 2021-10
