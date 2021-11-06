@@ -1,5 +1,4 @@
 import time
-import csv
 
 from selenium.webdriver.common.by import By
 
@@ -19,7 +18,7 @@ import utils
 from utils import hash_url
 
 
-class Browser():
+class Browser:
 
     def __init__(self):
         # tarayıcı ayarları
@@ -49,17 +48,6 @@ class Browser():
         try:
             self.set_user_agent()
             self.brw.get(url)
-            h_url = hash_url(url, save=True)
-            try:
-                with open(f'{settings.DEFAULT_CONTENT_DIR}/DOM/bot-facebook_{h_url}.csv', 'r',
-                          encoding='utf-8') as f:
-                    pass
-
-            except FileNotFoundError as e:
-                with open(f'{settings.DEFAULT_CONTENT_DIR}/DOM/bot-facebook_{h_url}.csv', 'w',
-                          encoding='utf-8') as f:
-                    writer = csv.writer(f)
-                    writer.writerow(["Begeni", "Yorum", "Paylasim"])
 
         except TimeoutException as e:
             settings.LOG.error(e.msg)
@@ -75,9 +63,8 @@ class Browser():
 
         return self.brw.current_url
 
-    def take_screenshot(self, url: str = settings.DEFAULT_PAGE_URL):
-        md5_url = hash_url(url)
-        self.brw.save_screenshot(f"{settings.DEFAULT_MEDIA_DIR}/bot-facebook_{md5_url}.png")
+    def take_screenshot(self, file):
+        self.brw.save_screenshot(f"{settings.DEFAULT_MEDIA_DIR}/{file}")
 
     def get_current_url(self):
         """
@@ -92,7 +79,6 @@ class Browser():
         """
         user_agent = self.user_agent_rotator.get_random_user_agent()
         self.chrome_options.add_argument(f'user-agent={user_agent}')
-        # self.chrome_options.add_argument('--disable-gpu')
         self.chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
         self.chrome_options.add_argument('ignore-certificate-errors')
         self.chrome_options.add_argument("--disable-popup-blocking")
@@ -106,18 +92,18 @@ class Browser():
         """
         try:
             url = self.get_current_url().split('/')
-            if url[3] == "login":
-                return True
-            else:
+            if url[3] != "login":
                 tag_text = self.brw.find_element(By.LINK_TEXT, "Yeni Hesap Oluştur")
                 tag_text = tag_text.get_attribute("href").split('/')[3]
                 if tag_text == "reg":
                     tag_text = self.brw.find_element(By.LINK_TEXT, "Giriş Yap")
                     self.get_url(tag_text.get_attribute("href"))
                     return True
+            else:
+                return True
 
         except AttributeError as e:
-            settings.LOG.error(e)
+            print("attribute_error: ", e)
             return False
 
         except NoSuchElementException as e:
@@ -147,39 +133,64 @@ class Browser():
             settings.LOG.error(e)
 
     def slide_scroll(self):
-        # self.brw.execute_script("window.scrollTo(0.5,document.body.scrollHeight)")
         self.brw.execute_script("window.scrollBy(0,350)")
 
-    def get_post_meta(self, date: str = "2021-10"):
+    def get_post_meta(self, date: str = "2021-11"):
         counter = 1
         month = date.split('-')[1]
         while True:
             try:
                 find_post = self.brw.find_element(By.XPATH, f"//div[@aria-posinset='{counter}']")
+                print(find_post)
                 elements = find_post.text.split('\n')
-
+                ref_item = elements.index("Beğen")
+                like_count = None
+                comment_count = None
+                share_count = None
+                if elements[ref_item - 1].split()[1] == "Paylaşım":
+                    like_count = elements[ref_item - 3]  # beğeni sayısı
+                    if elements[ref_item - 2].split()[1] == 'Yorum':
+                        comment_count = elements[ref_item - 2].split()[0]  # yorum sayısı
+                    else:
+                        pass
+                    share_count = elements[ref_item - 1].split()[0]
+                elif elements[ref_item - 1].split()[1] == "Yorum":
+                    like_count = elements[ref_item - 3]
+                else:
+                    like_count = elements[ref_item - 1]
                 if elements[1].split()[1].rstrip(',') == settings.DATE[month]:
+
                     url = hash_url(self.get_current_url())
-                    utils.save_post_meta(data=[elements[11],
-                                               elements[12].split()[0],
-                                               elements[13].split()[0]
+                    time.sleep(2)
+                    self.take_screenshot(file=f'bot-facebook_{month}_{counter}_{url}.png')
+                    utils.save_post_meta(data=[like_count,
+                                               comment_count,
+                                               share_count
                                                ],
                                          file=f'DOM/bot-facebook_{url}.csv')
+                    counter += 1
+                    self.slide_scroll()
+                    continue
                 else:
+                    counter += 1
                     self.slide_scroll()
                     time.sleep(1)
                     continue
 
-
             except IndexError as e:
-
+                """
+                Eğer sayfada hiç post bulunamaz ise buraya düşecektir.
+                """
+                print("IndexError")
                 settings.LOG.error(e)
                 self.slide_scroll()
                 counter += 1
                 continue
 
             except NoSuchElementException as e:
-
-
+                print("NoSuchElementExp", counter)
                 settings.LOG.error(e.msg)
+                time.sleep(2)
+                self.slide_scroll()
+                counter += 1
                 continue

@@ -39,7 +39,7 @@ ARGS.add_argument('-m', '--month', required=False, type=int, help='Gönderinin a
 PARGS = ARGS.parse_args()
 
 # Facebook parametreleri
-DEFAULT_PAGE_URL = "https://www.facebook.com/besiktasbelediyesi"
-DEFAULT_USERNAME = "" # facebook kullanıcı adı
-DEFAULT_PASSWORD = "" # facebook şifresi
+DEFAULT_PAGE_URL = "https://www.facebook.com/SultanbeyliBel"
+DEFAULT_USERNAME = "bb.baskal" # facebook kullanıcı adı
+DEFAULT_PASSWORD = "Gb14062014" # facebook şifresi
 
