@@ -2,7 +2,6 @@ import hashlib
 import settings
 import csv
 
-
 def hash_url(url: str, save: bool = False):
     """
     Bağlantı sağlanacak URL değerini alır, md5 algoritması ile şifreleyip
