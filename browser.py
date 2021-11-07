@@ -133,7 +133,7 @@ class Browser:
             settings.LOG.error(e)
 
     def slide_scroll(self):
-        self.brw.execute_script("window.scrollBy(0,350)")
+        self.brw.execute_script("window.scrollBy(0,300)")
 
     def get_post_meta(self, date: str = "2021-11"):
         counter = 1
@@ -141,7 +141,6 @@ class Browser:
         while True:
             try:
                 find_post = self.brw.find_element(By.XPATH, f"//div[@aria-posinset='{counter}']")
-                print(find_post)
                 elements = find_post.text.split('\n')
                 ref_item = elements.index("Beğen")
                 like_count = None
@@ -159,10 +158,9 @@ class Browser:
                 else:
                     like_count = elements[ref_item - 1]
                 if elements[1].split()[1].rstrip(',') == settings.DATE[month]:
-
                     url = hash_url(self.get_current_url())
                     time.sleep(2)
-                    self.take_screenshot(file=f'bot-facebook_{month}_{counter}_{url}.png')
+                    self.take_screenshot(file=f'OCR/bot-facebook_{month}_{counter}_{url}.png')
                     utils.save_post_meta(data=[like_count,
                                                comment_count,
                                                share_count
@@ -192,5 +190,4 @@ class Browser:
                 settings.LOG.error(e.msg)
                 time.sleep(2)
                 self.slide_scroll()
-                counter += 1
                 continue

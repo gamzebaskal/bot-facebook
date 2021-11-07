@@ -17,17 +17,17 @@ if settings.PARGS.page:
 
 else:
     brw.get_url()
-
 while True:
 
-    if brw.is_required_login() == False:
+    if brw.is_required_login() == True:
+        if brw.login(use_default=True):
+            continue
+
+
+    elif brw.is_required_login() == False:
         time.sleep(3)
         utils.create_dom_file(brw.get_current_url())
         brw.take_screenshot(file=f'bot-facebook_{brw.get_current_url()}')
         brw.get_post_meta()
         break
 
-    elif brw.is_required_login():
-
-        if brw.login(use_default=True):
-            continue
