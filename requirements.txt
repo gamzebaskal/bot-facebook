@@ -1,3 +1,4 @@
-facebook-scraper
+Pillow
 selenium
 random_user_agent
+pytesseract

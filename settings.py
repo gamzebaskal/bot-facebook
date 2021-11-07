@@ -12,13 +12,15 @@ try:
     os.mkdir("content/media")
     os.mkdir("content/DOM")
     os.mkdir("content/media/OCR")
+    os.mkdir("content/media/OCR/txt")
 except FileExistsError:
     pass
 
 # İçerik ayarları
 DEFAULT_CONTENT_DIR = Path.joinpath(BASE_DIR, 'content')
 DEFAULT_MEDIA_DIR = Path.joinpath(DEFAULT_CONTENT_DIR, 'media')
-TESSERACT_DIR = "C:/Program Files (x86)/Tesseract-OCR/tesseract.exe"
+DEFAULT_TESSERACT_DIR = "C:/Program Files (x86)/Tesseract-OCR/tesseract.exe"
+DEFAULT_OCR_DIR = Path.joinpath(DEFAULT_MEDIA_DIR, 'OCR')
 
 # Tarayıcı parametreleri
 BROWSER_DRIVER_DIR = Path.joinpath(BASE_DIR, "drivers/chromedriver.exe")

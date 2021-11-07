@@ -30,4 +30,3 @@ while True:
         brw.take_screenshot(file=f'bot-facebook_{brw.get_current_url()}')
         brw.get_post_meta()
         break
-

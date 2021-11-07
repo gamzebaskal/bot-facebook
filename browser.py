@@ -157,6 +157,7 @@ class Browser:
                     like_count = elements[ref_item - 3]
                 else:
                     like_count = elements[ref_item - 1]
+
                 if elements[1].split()[1].rstrip(',') == settings.DATE[month]:
                     url = hash_url(self.get_current_url())
                     time.sleep(2)
@@ -174,6 +175,11 @@ class Browser:
                     self.slide_scroll()
                     time.sleep(1)
                     continue
+
+            except ValueError as e:
+                settings.LOG.error(e)
+                continue
+
 
             except IndexError as e:
                 """
