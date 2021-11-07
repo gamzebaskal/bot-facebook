@@ -1,15 +1,24 @@
 import argparse
 import logging
+import os
 
 from pathlib import Path
 
 #Proje yolu
 BASE_DIR = Path(__file__).resolve().parent
 
+try:
+    os.system("mkdir content")
+    os.mkdir("content/media")
+    os.mkdir("content/DOM")
+    os.mkdir("content/media/OCR")
+except FileExistsError:
+    pass
+
 # İçerik ayarları
 DEFAULT_CONTENT_DIR = Path.joinpath(BASE_DIR, 'content')
 DEFAULT_MEDIA_DIR = Path.joinpath(DEFAULT_CONTENT_DIR, 'media')
-
+TESSERACT_DIR = "C:/Program Files (x86)/Tesseract-OCR/tesseract.exe"
 
 # Tarayıcı parametreleri
 BROWSER_DRIVER_DIR = Path.joinpath(BASE_DIR, "drivers/chromedriver.exe")
@@ -40,6 +49,6 @@ PARGS = ARGS.parse_args()
 
 # Facebook parametreleri
 DEFAULT_PAGE_URL = "https://www.facebook.com/SultanbeyliBel"
-DEFAULT_USERNAME = "bb.baskal" # facebook kullanıcı adı
-DEFAULT_PASSWORD = "Gb14062014" # facebook şifresi
+DEFAULT_USERNAME = ""
+DEFAULT_PASSWORD = ""
 
